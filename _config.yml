@@ -17,7 +17,7 @@ sidebar: true                           # whether or not using Sidebar.
 
 
 # SNS settings
-RSS: false
+RSS: true
 # weibo_username:     
 zhihu_username:     
 github_username:    gary0416
