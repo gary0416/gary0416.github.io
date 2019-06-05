@@ -11,9 +11,7 @@ tags:
 ---
 
 # 初始化root密码
-```
 sudo passwd
-```
 
 # 修改源
 备份
@@ -21,9 +19,28 @@ sudo passwd
 cp /etc/apt/sources.list /etc/apt/sources.list.bak
 ```
 然后修改:
-aliyun的见https://opsx.alibaba.com/guide?lang=zh-CN&document=69a2341e-801e-11e8-8b5a-00163e04cdbb
+aliyun的见 https://opsx.alibaba.com/guide?lang=zh-CN&document=69a2341e-801e-11e8-8b5a-00163e04cdbb，例如：
+```
+deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
 
-最后xenial-proposed的预发布软件源不启用,注释掉
+deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+
+#deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+#deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+```
+
+默认和security的一定开，update看心情，backports的谨慎开，proposed的关掉。引用网上的说明：
+- security：仅修复漏洞，并且尽可能少的改变软件包的行为
+- update：修复严重但不影响系统安全运行的漏洞，这类补丁在经过QA人员记录和验证后才提供
+- backports：backports的团队则认为最好的更新策略是security策略加上新版本的软件（包括候选版本的）。但不会由Ubuntu security team审查和更新。https://help.ubuntu.com/community/UbuntuBackports
 
 也可https://mirrors.ustc.edu.cn/repogen/,以及清华等
 
@@ -36,7 +53,7 @@ aliyun的见https://opsx.alibaba.com/guide?lang=zh-CN&document=69a2341e-801e-11e
 # 安装常用软件
 ## 必备
 ```
-sudo apt-get install net-tools gcc docker.io vim git
+sudo apt-get install net-tools gcc vim git
 sudo apt-get install tree iftop sysstat
 ```
 
@@ -195,12 +212,22 @@ sudo apt install openssh-server
 sudo vi /etc/ssh/sshd_config (解开22端口)
 sudo /etc/init.d/ssh restart
 
+# ssh防止空闲中断(注意不是sshd)
+sudo vi /etc/ssh/ssh_config
+# 后面追加:
+ServerAliveInterval 30
+
 # 快速启动(注意pgp key)
 sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/home:manuelschneid3r.list"
 wget -O - http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_18.04/Release.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install albert
 # 然后打开,设置快捷键,例如alt+r,然后extentions勾选Applications、System、WebSearch
+
+# 解决:手动设置dns无效,网络切换时总被改到127.0.0.53
+sudo apt install resolvconf
+修改/etc/resolvconf/resolv.conf.d/tail,增加nameserver 自定义dns.
+https://askubuntu.com/a/1012648
 ```
 
 ## 挂载ntfs
@@ -213,6 +240,46 @@ apt-get install ntfs-config
 ```
 sudo snap install gitkraken
 网速太慢就proxychains4 wget https://release.axocdn.com/linux/gitkraken-amd64.deb
+```
+
+## docker
+### docker ce
+```
+# 推荐,一条命令
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+# 或下面的(翻墙都慢)
+sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+### docker-compose
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
+
+### 非docker用户使用docker
+```
+sudo usermod -aG docker $USER
+```
+
+### kitematic
+```
+wget https://github.com/docker/kitematic/releases/download/v0.17.7/Kitematic-0.17.7-Ubuntu.zip && unzip Kitematic-0.17.7-Ubuntu.zip
+sudo dpkg -i Kitematic-0.17.7-Ubuntu.deb
 ```
 
 ## jdk
@@ -242,12 +309,23 @@ sudo add-apt-repository ppa:openjdk-r/ppa \
 
 ## idea
 goland,pycharm同理
+### 安装
 ```
 下载idea
 tar xzvf解压
 bin/idea.sh
 然后在tools里点击创建快捷方式
 ```
+
+### 解决快捷键冲突
+#### Ctrl+Alt+左 和 Ctrl+Alt+右:
+```
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "[]"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "[]"
+```
+
+#### Ctrl+Alt+B
+Fcitx 输入法.全局配置,显示高级选项.找到 切换虚拟键盘 点击按 Esc 取消并重启
 
 ## ssh快速登录各种服务器
 ```
@@ -267,7 +345,7 @@ sudo dpkg -i wps-office_10.1.0.6758_amd64.deb
 wps字体https://www.cnblogs.com/EasonJim/p/7146587.html
 
 ## shadowsocks
-见Shadowsocks Linux
+见Linux Shadowsocks
 
 ## chrome
 ```
@@ -303,7 +381,7 @@ wget https://dl.pstmn.io/download/latest/linux64
 tar xzvf Postman-linux-x64-7.0.7.tar.gz
 rm Postman-linux-x64-7.0.7.tar.gz
 mv Postman ../soft
-# 创建application
+# 创建application(或/home/zhangtb/.local/share/applications/下)
 sudo vim /usr/share/applications/postman.desktop
 [Desktop Entry]
 Encoding=UTF-8
@@ -339,6 +417,17 @@ apt install flameshot
 ## atom
 https://atom-installer.github.com/v1.35.1/atom-amd64.deb?s=1552477565&ext=.deb
 
+## notepad++
+```
+sudo snap install notepad-plus-plus
+sudo snap connect notepad-plus-plus:removable-media
+# Mandatory Plug
+sudo snap connect notepad-plus-plus:process-control
+# Optional Plugs
+sudo snap connect notepad-plus-plus:hardware-observe
+sudo snap connect notepad-plus-plus:cups-control
+```
+
 ## proxychains4
 ```
 sudo git clone https://github.com/rofl0r/proxychains-ng.git
@@ -372,6 +461,7 @@ ZSH_THEME="ys"
 plugins=(
   git
   z
+  kubectl
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
@@ -413,6 +503,31 @@ sudo mkfontdir
 sudo fc-cache -fv
 ```
 
+## python相关
+```
+sudo apt-get install python3-pip python3-venv
+
+mkdir ~/.pip/ && vi ~/.pip/pip.conf
+[global]
+index-url = http://mirrors.aliyun.com/pypi/simple/
+
+[install]
+trusted-host=mirrors.aliyun.com
+```
+
+## sdkman
+```
+curl -s "https://get.sdkman.io" | bash
+```
+
+## 深度终端
+```
+sudo add-apt-repository ppa:leaeasy/dde
+sudo apt update
+sudo apt install deepin-terminal
+```
+然后快捷键里去掉老的ctrl+alt+t，增加新的，命令deepin-terminal
+
 ## snap商店
 https://snapcraft.io/
 安装只需一条命令，方便。
@@ -435,6 +550,7 @@ sudo apt-get install compiz compiz-plugins compizconfig-settings-manager cairo-d
 
 # Dock再次点击时最小化
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+#恢复：gsettings reset org.gnome.shell.extensions.dash-to-dock click-action
 
 # 设置工作区等特性
 sudo apt-get install unity-tweak-tool
@@ -470,4 +586,10 @@ sudo apt-get install stacer -y
 # 解决桌面无法显示托盘图标
 sudo apt-get install gnome-shell-extension-top-icons-plus gnome-tweaks
 然后打开gnome-tweaks，扩展里启用Topicons Plus
+
+# thunderbird
+主题使用Monterail Dark
+
+# container-diff
+curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && chmod +x container-diff-linux-amd64 && sudo mv container-diff-linux-amd64 /usr/local/bin/container-diff
 ```
