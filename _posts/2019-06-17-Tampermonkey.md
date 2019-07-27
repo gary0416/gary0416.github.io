@@ -30,8 +30,21 @@ tags:
 
 (function() {
     'use strict';
+    function readmore(){
+        var btn = document.getElementById("btn-readmore");
+        if(btn){
+            btn.click();
+        }
+        // csdn改成class了
+        var btns = document.getElementsByClassName("btn-readmore");
+        if(btns.length>0){
+            btns[0].click();
+        }
+    }
+    // 为了尽快看到内容，未加载完时也尝试执行一次
+    readmore();
     window.onload=function(){
-        document.getElementById("btn-readmore").click();
+        readmore();
     }
 })();
 ```

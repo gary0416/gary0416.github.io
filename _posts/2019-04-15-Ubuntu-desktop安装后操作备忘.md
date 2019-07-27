@@ -184,11 +184,11 @@ set smartindent
 :inoremap " ""<ESC>i
 :inoremap ' ''<ESC>i
 function! ClosePair(char)
-	if getline('.')[col('.') - 1] == a:char
-		return "\<Right>"
-	else
-		return a:char
-	endif
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        return a:char
+    endif
 endfunction
 filetype plugin indent on
 "打开文件类型检测, 加了这句才可以用智能补全
@@ -228,6 +228,24 @@ sudo apt-get install albert
 sudo apt install resolvconf
 修改/etc/resolvconf/resolv.conf.d/tail,增加nameserver 自定义dns.
 https://askubuntu.com/a/1012648
+
+# 增加新建文档时的模板
+## 文本文档
+touch ~/模板/text.txt
+## bash脚本
+cat << EOF > ~/模板/script.sh
+#!/bin/bash
+set -o nounset
+set -o errexit
+#set -o verbose
+#set -o xtrace
+EOF
+
+# dconf
+## nautilus默认使用位置输入框，不用ctrl+l
+找到/org/gnome/nautilus/preferences下的always-use-location-entry，设置自定义值true
+## 上方日历里显示周
+找到/org/gnome/desktop/calendar/下的show-weekdate，打开
 ```
 
 ## 挂载ntfs
@@ -282,6 +300,25 @@ wget https://github.com/docker/kitematic/releases/download/v0.17.7/Kitematic-0.1
 sudo dpkg -i Kitematic-0.17.7-Ubuntu.deb
 ```
 
+## kubectl
+```
+sudo snap install kubectl --classic
+```
+
+### krew及插件
+```
+(
+  set -x; cd "$(mktemp -d)" &&
+  curl -fsSLO "https://storage.googleapis.com/krew/v0.2.1/krew.{tar.gz,yaml}" &&
+  tar zxvf krew.tar.gz &&
+  ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install \
+    --manifest=krew.yaml --archive=krew.tar.gz
+)
+追加PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+kubectl krew install sniff
+```
+
 ## jdk
 ### 多jdk切换
 ```
@@ -315,6 +352,7 @@ goland,pycharm同理
 tar xzvf解压
 bin/idea.sh
 然后在tools里点击创建快捷方式
+字体用Source Code Pro
 ```
 
 ### 解决快捷键冲突
@@ -345,7 +383,8 @@ sudo dpkg -i wps-office_10.1.0.6758_amd64.deb
 wps字体https://www.cnblogs.com/EasonJim/p/7146587.html
 
 ## shadowsocks
-见Linux Shadowsocks
+1.见Linux Shadowsocks
+2.https://github.com/qingshuisiyuan/electron-ssr-backup.配置里取消快捷键.启动里增加执行electron-ssr-0.2.6.AppImage
 
 ## chrome
 ```
@@ -414,8 +453,53 @@ apt install flameshot
 进入系统设置-设备-键盘，选择添加自定义快捷键，设置快捷键的命令/usr/bin/flameshot gui和名称FlameShot。然后绑定一下键盘Ctrl+Alt+A
 ```
 
-## atom
-https://atom-installer.github.com/v1.35.1/atom-amd64.deb?s=1552477565&ext=.deb
+## Sublime Text
+```
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+sudo apt-get install apt-transport-https
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+sudo apt-get update && sudo apt-get install sublime-text
+```
+然后安装Package Controll。 https://packagecontrol.io/installation
+
+设置代理，解决梯子问题：
+```
+Preferences > Package Settings > Package Control > Settings - User，增加：
+"http_proxy": "http://127.0.0.1:12333",
+"https_proxy": "http://127.0.0.1:12333",
+```
+
+Preferences > Package Control，选Install，然后输入插件名安装。
+- Pretty JSON  快捷键：Ctrl + Alt + J
+- compare Side-By-Side
+- A File Icon
+- ConvertToUTF8
+- Codecs33
+
+配置
+```
+{
+  "auto_find_in_selection": true,
+  "auto_match_enabled": true,
+  "color_scheme": "Packages/Color Scheme - Default/Mariana.sublime-color-scheme",
+  "default_encoding": "UTF-8",
+  "default_line_ending": "unix",
+  "draw_white_space": "all",
+  "font_face": "Source Code Pro",
+  "font_size": 14,
+  "highlight_line": true,
+  "ignored_packages":
+  [
+    "Vintage"
+  ],
+ "show_encoding": true,
+  "show_line_endings": true,
+  "tab_size": 4,
+  "theme": "Default.sublime-theme",
+  "translate_tabs_to_spaces": true,
+  "word_wrap": true
+}
+```
 
 ## notepad++
 ```
@@ -472,11 +556,27 @@ chsh -s $(which zsh)
 ```
 
 ## linux版飞秋
-apt方式安装的是0.7.4旧版，不兼容飞秋。目前0.7.6版仍然有BUG，导入网络IP段无法保存。不支持接收飞秋的图片，其余功能正常。
+1. apt方式安装的是0.7.4旧版，不兼容飞秋。
+2. 目前0.7.6版仍然有BUG，导入网络IP段无法保存。不支持接收飞秋的图片，其余功能正常。
+3. git最后Commits on Jun 22, 2019（pr284）。保存聊天记录则闪退，不支持最小化到托盘，不支持收文件，已解决IP段无法保存。
+4. 综上，使用第二种方法，0.7.6版：
 ```
 wget http://ftp.br.debian.org/debian/pool/main/i/iptux/iptux_0.7.6-1_amd64.deb
 sudo dpkg -i iptux_0.7.6-1_amd64.deb
 # 打开首选项，系统，首选网络编码设置成GBK，勾选自动打开聊天窗口，重启iptux
+```
+
+附：3.git源码编译
+```
+# 解决libglog依赖
+git clone https://github.com/google/glog.git && cd glog
+sudo ./autogen.sh && sudo ./configure && sudo make && sudo make install
+
+https://github.com/iptux-src/iptux.git && cd iptux
+meson builddir && ninja -C builddir
+sudo ninja -C builddir install
+sudo ldconfig
+iptux运行
 ```
 
 ## 字体
@@ -498,9 +598,16 @@ sudo rm /usr/share/package-data-downloads/ttf-mscorefonts-installer && rm /var/l
 ```
 sudo mkdir /usr/share/fonts/my
 # 重建缓存
-sudo mkfontscale
-sudo mkfontdir
-sudo fc-cache -fv
+sudo mkfontscale && sudo mkfontdir && sudo fc-cache -fv
+```
+
+### Adobe Source Code Pro
+```
+[ -d /usr/share/fonts/my ] || sudo mkdir /usr/share/fonts/my
+# 太大，改用下面那句 sudo git clone https://github.com/adobe-fonts/source-code-pro.git /usr/share/fonts/my/source-code-pro
+wget https://github.com/adobe-fonts/source-code-pro/archive/release.zip && unzip release.zip && rm release.zip
+
+fc-list  | grep "Source Code Pro"
 ```
 
 ## python相关
@@ -520,13 +627,61 @@ trusted-host=mirrors.aliyun.com
 curl -s "https://get.sdkman.io" | bash
 ```
 
-## 深度终端
+## terminator
 ```
-sudo add-apt-repository ppa:leaeasy/dde
-sudo apt update
-sudo apt install deepin-terminal
+sudo apt-get install terminator
+#dconf里exec从gnome-terminal改为terminator
+gsettings set org.gnome.desktop.default-applications.terminal exec terminator
+
+# 配置~/.config/terminator/config:
+[global_config]
+  always_split_with_profile = True
+  enabled_plugins = CustomCommandsMenu, ActivityWatch, LaunchpadCodeURLHandler, APTURLHandler, Logger, MavenPluginURLHandler, LaunchpadBugURLHandler
+  focus = system
+  handle_size = 0
+  suppress_multiple_term_dialog = True
+  title_transmit_bg_color = "#555753"
+  window_state = maximise
+[keybindings]
+  edit_tab_title = None
+  hide_window = None
+  switch_to_tab_1 = <Alt>1
+  switch_to_tab_2 = <Alt>2
+  switch_to_tab_3 = <Alt>3
+  switch_to_tab_4 = <Alt>4
+  switch_to_tab_5 = <Alt>5
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      profile = default
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+[plugins]
+[profiles]
+  [[default]]
+    background_darkness = 0.95
+    background_type = transparent
+    cursor_color = "#2D2D2D"
+    font = Source Code Pro 13
+    foreground_color = "#ffffff"
+    palette = "#000000:#cc0000:#4e9a06:#c4a000:#3465a4:#75507b:#06989a:#d3d7cf:#555753:#ef2929:#8ae234:#fce94f:#729fcf:#ad7fa8:#34e2e2:#eeeeec"
+    scrollback_lines = 3000
+    show_titlebar = False
+    use_system_font = False
 ```
-然后快捷键里去掉老的ctrl+alt+t，增加新的，命令deepin-terminal
+
+## wireshark
+```
+sudo add-apt-repository ppa:wireshark-dev/stable
+sudo apt-get update && sudo apt-get install wireshark
+# 然后选yes，或运行下面的一句
+sudo dpkg-reconfigure wireshark-common
+sudo adduser $USER wireshark
+sudo setcap cap_net_raw,cap_net_admin=eip /usr/bin/dumpcap
+```
 
 ## snap商店
 https://snapcraft.io/
@@ -569,7 +724,8 @@ sudo apt-get install chrome-gnome-shell
 #然后可以从https://extensions.gnome.org/local/安装,用FF打开并安装附加组件,FF的扩展利用上面安装的shell
 # 挑好之后,切换on和off即可安装,例如:
 # Coverflow Alt-Tab
-# Simple net speed
+# Simple net speed (切换单位到B/s)
+# New Mail Indicator
 
 # 可选
 sudo apt install gnome-tweak-tool  把上面一行时间旁的日期打开
@@ -589,6 +745,7 @@ sudo apt-get install gnome-shell-extension-top-icons-plus gnome-tweaks
 
 # thunderbird
 主题使用Monterail Dark
+安装插件https://github.com/Ximi1970/FireTray/releases
 
 # container-diff
 curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && chmod +x container-diff-linux-amd64 && sudo mv container-diff-linux-amd64 /usr/local/bin/container-diff
