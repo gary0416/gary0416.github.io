@@ -285,7 +285,7 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 
 ### docker-compose
 ```
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ```
 
@@ -344,6 +344,16 @@ sudo add-apt-repository ppa:openjdk-r/ppa \
 ```
 注：直接apt install安装openjdk-11-jdk的话，实际安装的是10，见https://stackoverflow.com/questions/52504825/how-to-install-jdk-11-under-ubuntu
 
+## jmc
+```
+sudo apt-get install mercurial
+
+cd ~/soft && proxychains4 hg clone http://hg.openjdk.java.net/jmc/jmc/
+cd jmc/docker && proxychains4 docker-compose up
+# docker_jmc_1 exited with code 0 后Ctrl-C退出，对下面的路径创建快捷方式
+target/products/org.openjdk.jmc/linux/gtk/x86_64/jmc
+```
+
 ## idea
 goland,pycharm同理
 ### 安装
@@ -388,10 +398,11 @@ wps字体https://www.cnblogs.com/EasonJim/p/7146587.html
 
 ## chrome
 ```
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome*; sudo apt-get -f install
-sudo vi /usr/share/applications/google-chrome.desktop
+sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+sudo apt install google-chrome-stable
+
 # 忽略HTTPS的警告，开启远程debug(配合VS Code)
+sudo vi /usr/share/applications/google-chrome.desktop
 找到几处Exec,后面增加参数 --test-type --ignore-certificate-errors --remote-debugging-port=9222
 ```
 
@@ -420,7 +431,7 @@ wget https://dl.pstmn.io/download/latest/linux64
 tar xzvf Postman-linux-x64-7.0.7.tar.gz
 rm Postman-linux-x64-7.0.7.tar.gz
 mv Postman ../soft
-# 创建application(或/home/zhangtb/.local/share/applications/下)
+# 创建application(或/home/zhangtb/.local/share/applications/下,snap的在/var/lib/snapd/desktop/applications)
 sudo vim /usr/share/applications/postman.desktop
 [Desktop Entry]
 Encoding=UTF-8
@@ -608,6 +619,13 @@ sudo mkfontscale && sudo mkfontdir && sudo fc-cache -fv
 wget https://github.com/adobe-fonts/source-code-pro/archive/release.zip && unzip release.zip && rm release.zip
 
 fc-list  | grep "Source Code Pro"
+```
+
+### monaco
+```
+git clone https://github.com/cstrap/monaco-font
+cd monaco-font
+./install-font-ubuntu.sh http://www.gringod.com/wp-upload/software/Fonts/Monaco_Linux.ttf
 ```
 
 ## python相关
