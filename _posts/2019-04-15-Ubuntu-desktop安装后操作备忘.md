@@ -217,24 +217,29 @@ sudo vi /etc/ssh/ssh_config
 # 后面追加:
 ServerAliveInterval 30
 
-# 快速启动(注意pgp key)
+# 快速启动
+## uTools
+wget https://resource.u-tools.cn/version/utools_0.7.1-beta_amd64.deb && sudo dpkg -i utools_0.7.1-beta_amd64.deb
+## 设置快捷键alt+r。插件开启：正则表达式、JSON编辑器、计算稿纸、网页快开（开启google、百度、github、stackoverflow）、编码小助手。确认开启搜索本地应用。设置开机启动。
+
+## (备用)albert(注意pgp key)
 sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/home:manuelschneid3r.list"
 wget -O - http://download.opensuse.org/repositories/home:/manuelschneid3r/xUbuntu_18.04/Release.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install albert
-# 然后打开,设置快捷键,例如alt+r,然后extentions勾选Applications、System、WebSearch
+## 然后打开,设置快捷键,例如alt+r,然后extentions勾选Applications、System、WebSearch
 
 # 解决:手动设置dns无效,网络切换时总被改到127.0.0.53
 sudo apt install resolvconf
 修改/etc/resolvconf/resolv.conf.d/tail,增加nameserver 自定义dns.
 https://askubuntu.com/a/1012648
 
-# 增加新建文档时的模板
+# 增加新建文档时的模板(/home/zhangtb/模板)
 ## 文本文档
 touch ~/模板/text.txt
 ## bash脚本
 cat << EOF > ~/模板/script.sh
-#!/bin/bash
+#!/bin/bash -l
 set -o nounset
 set -o errexit
 #set -o verbose
@@ -715,6 +720,7 @@ https://snapcraft.io/
 - Navicat premium(https://www.jianshu.com/p/5f693b4c9468.乱码：界面、编辑器、记录字体用Noto Sans mono CJK SC Regular)
 - smartsvn(授权文件https://blog.csdn.net/liuayng/article/details/70311844)
 - 安装并配置maven，gradle，golang
+- DBeaver
 
 ```
 # 桌面特效
