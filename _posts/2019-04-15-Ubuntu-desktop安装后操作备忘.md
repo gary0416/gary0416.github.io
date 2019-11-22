@@ -61,9 +61,6 @@ sudo apt-get install tree iftop sysstat
 
 sudo vi /etc/vim/vimrc.local
 ```
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""实用设置
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 设置当文件被改动时自动载入
 set autoread
 " quickfix模式
@@ -105,10 +102,11 @@ set cindent
 " Tab键的宽度
 set tabstop=4
 " 统一缩进为4
+set ts=4
 set softtabstop=4
 set shiftwidth=4
-" 不要用空格代替制表符
-set noexpandtab
+" 空格代替制表符
+set expandtab
 " 在行和段开始处使用制表符
 set smarttab
 " 显示行号
@@ -157,7 +155,7 @@ set backspace=2
 " 允许backspace和光标键跨越行边界
 set whichwrap+=<,>,h,l
 " 可以在buffer的任何地方使用鼠标（类似office中在工作区双击鼠标定位）
-set mouse=a
+set mouse=v
 set selection=exclusive
 set selectmode=mouse,key
 " 通过使用: commands命令，告诉我们文件的哪一行被改变过
@@ -193,7 +191,6 @@ endfunction
 filetype plugin indent on
 "打开文件类型检测, 加了这句才可以用智能补全
 set completeopt=longest,menu
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ```
 
 ### 配置git
@@ -203,6 +200,9 @@ git config --global user.email "408036296@163.com"
 
 git config --global https.proxy http://127.0.0.1:1080
 git config --global https.proxy https://127.0.0.1:1080
+
+git config --global diff.tool vimdiff
+git config --global difftool.prompt false
 ```
 
 ### 其它配置
@@ -244,6 +244,8 @@ set -o nounset
 set -o errexit
 #set -o verbose
 #set -o xtrace
+set -euo pipefail
+trap "echo 'error: Script failed: see failed command above'" ERR
 EOF
 
 # dconf
@@ -297,6 +299,12 @@ chmod +x /usr/local/bin/docker-compose
 ### 非docker用户使用docker
 ```
 sudo usermod -aG docker $USER
+```
+
+### dive
+```
+wget https://github.com/wagoodman/dive/releases/download/v0.8.1/dive_0.8.1_linux_amd64.deb
+sudo apt install ./dive_0.8.1_linux_amd64.deb
 ```
 
 ### kitematic
@@ -411,7 +419,15 @@ sudo vi /usr/share/applications/google-chrome.desktop
 找到几处Exec,后面增加参数 --test-type --ignore-certificate-errors --remote-debugging-port=9222
 ```
 
-## 搜狗输入法
+## 谷歌输入法
+打开 ubuntu 软件中心，搜索 fcitx，把3个带企鹅图标的软件都安装上
+```
+sudo apt install fcitx-googlepinyin
+# 避免有两个输入法图标
+sudo apt remove fcitx-ui-classic
+```
+
+## (备用)搜狗输入法
 除了默认的输入法可以用（按shift就能切换，也挺省事），还可以用搜狗。
 https://pinyin.sogou.com/linux/?r=pinyin
 ```
@@ -491,6 +507,7 @@ Preferences > Package Control，选Install，然后输入插件名安装。
 - A File Icon
 - ConvertToUTF8
 - Codecs33
+- Terminal (修改配置terminal值为terminator)
 
 配置
 ```
@@ -569,6 +586,44 @@ plugins=(
 source ~/.zshrc
 chsh -s $(which zsh)
 # 恢复用chsh -s /bin/bash
+```
+
+### 附1：.zshrc追加汇总
+```
+export EDITOR=vim
+
+export GOPATH=/home/zhangtb/gary-linux/workspace/go
+export PATH=$PATH:$GOBIN
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+export R_HOME=/usr/lib/R
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/zhangtb/.sdkman"
+[[ -s "/home/zhangtb/.sdkman/bin/sdkman-init.sh" ]] && source "/home/zhangtb/.sdkman/bin/sdkman-init.sh"
+```
+
+### 附2：/etc/profile追加汇总
+也可/etc/profile.d/下新建个.sh
+```
+export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+export PATH="$PATH:$JAVA_HOME/bin"
+export JRE_HOME="$JAVA_HOME/jre"
+export CLASSPATH=".:$JAVA_HOME/lib:$JRE_HOME/lib"
+
+export PATH=$PATH:/usr/local/go/bin
+export GOROOT=/usr/local/go
+
+export M2_HOME=/home/zhangtb/soft/apache-maven/latest
+
+export HADOOP_HOME=/home/zhangtb/gary/dev/hadoop/hadoop-2.7.3/
+
+export PATH=$PATH:$M2_HOME/bin
 ```
 
 ## linux版飞秋
@@ -750,6 +805,7 @@ sudo apt-get install chrome-gnome-shell
 # Coverflow Alt-Tab
 # Simple net speed (切换单位到B/s)
 # New Mail Indicator
+# Lock Keys
 
 # 可选
 sudo apt install gnome-tweak-tool  把上面一行时间旁的日期打开
