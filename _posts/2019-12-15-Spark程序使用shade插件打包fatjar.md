@@ -52,6 +52,7 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
         <scala.binary.version>2.11</scala.binary.version>
         <spark-hive.version>1.21.2.2.6.3.0-235</spark-hive.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
+        <shade.mainClass></shade.mainClass>
     </properties>
 
     <dependencies>
@@ -169,7 +170,6 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
                             <exclude>com.google.code.gson:gson</exclude>
                             <exclude>com.google.inject.extensions:guice-servlet</exclude>
                             <exclude>com.google.inject:guice</exclude>
-                            <exclude>com.google.protobuf:protobuf-java</exclude>
                             <exclude>com.googlecode.javaewah:JavaEWAH</exclude>
                             <exclude>com.jamesmurty.utils:java-xmlbuilder</exclude>
                             <exclude>com.jcraft:jsch</exclude>
@@ -426,8 +426,10 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
                         <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                             <resource>META-INF/spring.schemas</resource>
                         </transformer>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>${shade.mainClass}</mainClass>
                         </transformer>
                     </transformers>
                 </configuration>
@@ -439,6 +441,16 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
                         </goals>
                     </execution>
                 </executions>
+                <relocations>
+                    <relocation>
+                        <pattern>com.google.protobuf</pattern>
+                        <shadedPattern>shaded.com.google.protobuf</shadedPattern>
+                    </relocation>
+                    <relocation>
+                        <pattern>com.google.guava</pattern>
+                        <shadedPattern>shaded.com.google.guava</shadedPattern>
+                    </relocation>
+                </relocations>
             </plugin>
         </plugins>
     </build>

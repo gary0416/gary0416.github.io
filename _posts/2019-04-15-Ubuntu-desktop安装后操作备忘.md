@@ -253,6 +253,15 @@ EOF
 找到/org/gnome/nautilus/preferences下的always-use-location-entry，设置自定义值true
 ## 上方日历里显示周
 找到/org/gnome/desktop/calendar/下的show-weekdate，打开
+
+# sudo免密码
+sudo visudo
+找到 %sudo ALL=(ALL:ALL) ALL 改成 %sudo ALL=(ALL:ALL) NOPASSWD:ALL
+
+# 修复双系统时,windows时间错误
+sudo apt install ntpdate
+sudo ntpdate time.windows.com
+sudo hwclock --localtime --systohc
 ```
 
 ## 挂载ntfs
