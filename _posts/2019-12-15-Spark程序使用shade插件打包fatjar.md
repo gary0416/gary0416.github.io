@@ -51,6 +51,8 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
         <spark.version>2.2.0.2.6.3.0-235</spark.version>
         <scala.binary.version>2.11</scala.binary.version>
         <spark-hive.version>1.21.2.2.6.3.0-235</spark-hive.version>
+        <pmml-evaluator.version>1.4.14</pmml-evaluator.version>
+        <jpmml-sparkml.version>1.3.14</jpmml-sparkml.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
         <shade.mainClass></shade.mainClass>
     </properties>
@@ -94,11 +96,38 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-mllib_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jpmml</groupId>
+                        <artifactId>pmml-model</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-graphx_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jpmml</groupId>
+                <artifactId>jpmml-sparkml</artifactId>
+                <version>${jpmml-sparkml.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>guava</artifactId>
+                        <groupId>com.google.guava</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.jpmml</groupId>
+                <artifactId>pmml-evaluator</artifactId>
+                <version>${pmml-evaluator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jpmml</groupId>
+                <artifactId>pmml-evaluator-extension</artifactId>
+                <version>${pmml-evaluator.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -449,6 +478,60 @@ export CLASSPATH="$PWD:$PWD/__spark_conf__:$PWD/__spark_libs__/*:/usr/hdp/2.6.3.
                     <relocation>
                         <pattern>com.google.guava</pattern>
                         <shadedPattern>shaded.com.google.guava</shadedPattern>
+                    </relocation>
+                    <!--
+                        SPARK-15526
+                        本地IDE运行时,sparkml2pmml.properties干掉
+                        集群运行时,因为有shade relocate,所以需要在配置文件里指定relocate后的类名
+                        src/main/resources/META-INF/sparkml2pmml.properties内容如下:
+                        # Features
+                        org.apache.spark.ml.feature.Binarizer = shaded.org.jpmml.sparkml.feature.BinarizerConverter
+                        org.apache.spark.ml.feature.Bucketizer = shaded.org.jpmml.sparkml.feature.BucketizerConverter
+                        org.apache.spark.ml.feature.ChiSqSelectorModel = shaded.org.jpmml.sparkml.feature.ChiSqSelectorModelConverter
+                        org.apache.spark.ml.feature.ColumnPruner = shaded.org.jpmml.sparkml.feature.ColumnPrunerConverter
+                        org.apache.spark.ml.feature.CountVectorizerModel = shaded.org.jpmml.sparkml.feature.CountVectorizerModelConverter
+                        org.apache.spark.ml.feature.IDFModel = shaded.org.jpmml.sparkml.feature.IDFModelConverter
+                        org.apache.spark.ml.feature.ImputerModel = shaded.org.jpmml.sparkml.feature.ImputerModelConverter
+                        org.apache.spark.ml.feature.IndexToString = shaded.org.jpmml.sparkml.feature.IndexToStringConverter
+                        org.apache.spark.ml.feature.Interaction = shaded.org.jpmml.sparkml.feature.InteractionConverter
+                        org.apache.spark.ml.feature.MaxAbsScalerModel = shaded.org.jpmml.sparkml.feature.MaxAbsScalerModelConverter
+                        org.apache.spark.ml.feature.MinMaxScalerModel = shaded.org.jpmml.sparkml.feature.MinMaxScalerModelConverter
+                        org.apache.spark.ml.feature.NGram = shaded.org.jpmml.sparkml.feature.NGramConverter
+                        org.apache.spark.ml.feature.OneHotEncoder = shaded.org.jpmml.sparkml.feature.OneHotEncoderConverter
+                        org.apache.spark.ml.feature.PCAModel = shaded.org.jpmml.sparkml.feature.PCAModelConverter
+                        org.apache.spark.ml.feature.RegexTokenizer = shaded.org.jpmml.sparkml.feature.RegexTokenizerConverter
+                        org.apache.spark.ml.feature.RFormulaModel = shaded.org.jpmml.sparkml.feature.RFormulaModelConverter
+                        org.apache.spark.ml.feature.SQLTransformer = shaded.org.jpmml.sparkml.feature.SQLTransformerConverter
+                        org.apache.spark.ml.feature.StandardScalerModel = shaded.org.jpmml.sparkml.feature.StandardScalerModelConverter
+                        org.apache.spark.ml.feature.StringIndexerModel = shaded.org.jpmml.sparkml.feature.StringIndexerModelConverter
+                        org.apache.spark.ml.feature.StopWordsRemover = shaded.org.jpmml.sparkml.feature.StopWordsRemoverConverter
+                        org.apache.spark.ml.feature.Tokenizer = shaded.org.jpmml.sparkml.feature.TokenizerConverter
+                        org.apache.spark.ml.feature.VectorAssembler = shaded.org.jpmml.sparkml.feature.VectorAssemblerConverter
+                        org.apache.spark.ml.feature.VectorAttributeRewriter = shaded.org.jpmml.sparkml.feature.VectorAttributeRewriterConverter
+                        org.apache.spark.ml.feature.VectorIndexerModel = shaded.org.jpmml.sparkml.feature.VectorIndexerModelConverter
+                        org.apache.spark.ml.feature.VectorSlicer = shaded.org.jpmml.sparkml.feature.VectorSlicerConverter
+                        # Prediction models
+                        org.apache.spark.ml.classification.DecisionTreeClassificationModel = shaded.org.jpmml.sparkml.model.DecisionTreeClassificationModelConverter
+                        org.apache.spark.ml.classification.GBTClassificationModel = shaded.org.jpmml.sparkml.model.GBTClassificationModelConverter
+                        org.apache.spark.ml.classification.LinearSVCModel = shaded.org.jpmml.sparkml.model.LinearSVCModelConverter
+                        org.apache.spark.ml.classification.LogisticRegressionModel = shaded.org.jpmml.sparkml.model.LogisticRegressionModelConverter
+                        org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel = shaded.org.jpmml.sparkml.model.MultilayerPerceptronClassificationModelConverter
+                        org.apache.spark.ml.classification.NaiveBayesModel = shaded.org.jpmml.sparkml.model.NaiveBayesModelConverter
+                        org.apache.spark.ml.classification.RandomForestClassificationModel = shaded.org.jpmml.sparkml.model.RandomForestClassificationModelConverter
+                        org.apache.spark.ml.clustering.KMeansModel = shaded.org.jpmml.sparkml.model.KMeansModelConverter
+                        org.apache.spark.ml.regression.DecisionTreeRegressionModel = shaded.org.jpmml.sparkml.model.DecisionTreeRegressionModelConverter
+                        org.apache.spark.ml.regression.GBTRegressionModel = shaded.org.jpmml.sparkml.model.GBTRegressionModelConverter
+                        org.apache.spark.ml.regression.GeneralizedLinearRegressionModel = shaded.org.jpmml.sparkml.model.GeneralizedLinearRegressionModelConverter
+                        org.apache.spark.ml.regression.LinearRegressionModel = shaded.org.jpmml.sparkml.model.LinearRegressionModelConverter
+                        org.apache.spark.ml.regression.RandomForestRegressionModel = shaded.org.jpmml.sparkml.model.RandomForestRegressionModelConverter
+                    -->
+                    <relocation>
+                        <pattern>org.dmg.pmml</pattern>
+                        <shadedPattern>shaded.org.dmg.pmml</shadedPattern>
+                    </relocation>
+                    <relocation>
+                        <pattern>org.jpmml</pattern>
+                        <shadedPattern>shaded.org.jpmml</shadedPattern>
                     </relocation>
                 </relocations>
             </plugin>
