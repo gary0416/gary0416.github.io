@@ -198,7 +198,7 @@ set completeopt=longest,menu
 git config --global user.name "gary0416"
 git config --global user.email "408036296@163.com"
 
-git config --global https.proxy http://127.0.0.1:1080
+git config --global http.proxy http://127.0.0.1:1080
 git config --global https.proxy https://127.0.0.1:1080
 
 git config --global diff.tool vimdiff
@@ -248,9 +248,10 @@ set -euo pipefail
 trap "echo 'error: Script failed: see failed command above'" ERR
 EOF
 
+# nautilus默认按类型排序
+gsettings set org.gnome.nautilus.preferences default-sort-order 'type'
+
 # dconf
-## nautilus默认使用位置输入框，不用ctrl+l
-找到/org/gnome/nautilus/preferences下的always-use-location-entry，设置自定义值true
 ## 上方日历里显示周
 找到/org/gnome/desktop/calendar/下的show-weekdate，打开
 
@@ -322,6 +323,11 @@ wget https://github.com/docker/kitematic/releases/download/v0.17.7/Kitematic-0.1
 sudo dpkg -i Kitematic-0.17.7-Ubuntu.deb
 ```
 
+### container-diff
+```
+curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && chmod +x container-diff-linux-amd64 && sudo mv container-diff-linux-amd64 /usr/local/bin/container-diff
+```
+
 ## kubectl
 ```
 sudo snap install kubectl --classic
@@ -384,7 +390,6 @@ goland,pycharm同理
 tar xzvf解压
 bin/idea.sh
 然后在tools里点击创建快捷方式
-字体用Source Code Pro
 ```
 
 ### 解决快捷键冲突
@@ -428,7 +433,7 @@ sudo vi /usr/share/applications/google-chrome.desktop
 找到几处Exec,后面增加参数 --test-type --ignore-certificate-errors --remote-debugging-port=9222
 ```
 
-## 谷歌输入法
+## (备用)谷歌输入法
 打开 ubuntu 软件中心，搜索 fcitx，把3个带企鹅图标的软件都安装上
 ```
 sudo apt install fcitx-googlepinyin
@@ -436,7 +441,7 @@ sudo apt install fcitx-googlepinyin
 sudo apt remove fcitx-ui-classic
 ```
 
-## (备用)搜狗输入法
+## 搜狗输入法
 除了默认的输入法可以用（按shift就能切换，也挺省事），还可以用搜狗。
 https://pinyin.sogou.com/linux/?r=pinyin
 ```
@@ -477,12 +482,14 @@ Categories=Development;
 见wine,可配合playonlinux使用,安装后可自定义wine版本.
 推荐使用deepin-wine，可安装Foxmail等。
 
+### deepin-wine
+见 https://gitee.com/wszqkzqk/deepin-wine-for-ubuntu，使用的本地安装方式，注意第六条和第八条。
+
 ## typora(markdown)
 ```
 wget -qO - https://typora.io/linux/public-key.asc | sudo apt-key add -
 sudo add-apt-repository 'deb https://typora.io/linux ./'
-sudo apt-get update
-sudo apt-get install typora
+sudo apt-get update && sudo apt-get install typora
 ```
 
 ## 截图
@@ -527,7 +534,6 @@ Preferences > Package Control，选Install，然后输入插件名安装。
   "default_encoding": "UTF-8",
   "default_line_ending": "unix",
   "draw_white_space": "all",
-  "font_face": "Source Code Pro",
   "font_size": 14,
   "highlight_line": true,
   "ignored_packages":
@@ -602,6 +608,7 @@ chsh -s $(which zsh)
 export EDITOR=vim
 
 export GOPATH=/home/zhangtb/gary-linux/workspace/go
+export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 
 export PATH="$HOME/.rbenv/bin:$PATH"
@@ -629,10 +636,9 @@ export PATH=$PATH:/usr/local/go/bin
 export GOROOT=/usr/local/go
 
 export M2_HOME=/home/zhangtb/soft/apache-maven/latest
+export PATH=$PATH:$M2_HOME/bin
 
 export HADOOP_HOME=/home/zhangtb/gary/dev/hadoop/hadoop-2.7.3/
-
-export PATH=$PATH:$M2_HOME/bin
 ```
 
 ## linux版飞秋
@@ -696,6 +702,9 @@ git clone https://github.com/cstrap/monaco-font
 cd monaco-font
 ./install-font-ubuntu.sh http://www.gringod.com/wp-upload/software/Fonts/Monaco_Linux.ttf
 ```
+
+### jetbrains mono
+https://www.jetbrains.com/lp/mono/
 
 ## python相关
 ```
@@ -777,20 +786,20 @@ https://snapcraft.io/
 ## ubuntu软件中安装
 - pac-vs（ssh工具备用,已由SSHAutoLogin脚本代替）
 - MySQL Workbench（备用，仍然主要使用Navicat）
+- drawio
+- RedisDesktopManager
+- Visual Studio Code
+- VLC
+- VisualVM
 
 ## 其他
 安装:
-- vscode
 - Navicat premium(https://www.jianshu.com/p/5f693b4c9468.乱码：界面、编辑器、记录字体用Noto Sans mono CJK SC Regular)
 - smartsvn(授权文件https://blog.csdn.net/liuayng/article/details/70311844)
 - 安装并配置maven，gradle，golang
 - DBeaver
 
 ```
-# 桌面特效
-sudo apt-get install compiz compiz-plugins compizconfig-settings-manager cairo-dock
-#开机启动：在启动应用程序添加 #名称与命令中都添加cairo-dock (此dock已由albert替代)
-
 # Dock再次点击时最小化
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 #恢复：gsettings reset org.gnome.shell.extensions.dash-to-dock click-action
@@ -835,7 +844,5 @@ sudo apt-get install gnome-shell-extension-top-icons-plus gnome-tweaks
 # thunderbird
 主题使用Monterail Dark
 安装插件https://github.com/Ximi1970/FireTray/releases
-
-# container-diff
-curl -LO https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64 && chmod +x container-diff-linux-amd64 && sudo mv container-diff-linux-amd64 /usr/local/bin/container-diff
+去掉签名自带的两个短横线分割符:工具-> 选项-> 高级-> 配置编辑 中，将 mail.identity.default.suppress_signature_separator 改为 true
 ```
