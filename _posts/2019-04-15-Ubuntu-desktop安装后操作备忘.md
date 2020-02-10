@@ -550,17 +550,6 @@ Preferences > Package Control，选Install，然后输入插件名安装。
 }
 ```
 
-## notepad++
-```
-sudo snap install notepad-plus-plus
-sudo snap connect notepad-plus-plus:removable-media
-# Mandatory Plug
-sudo snap connect notepad-plus-plus:process-control
-# Optional Plugs
-sudo snap connect notepad-plus-plus:hardware-observe
-sudo snap connect notepad-plus-plus:cups-control
-```
-
 ## proxychains4
 ```
 sudo git clone https://github.com/rofl0r/proxychains-ng.git
@@ -800,6 +789,15 @@ https://snapcraft.io/
 - 安装并配置maven，gradle，golang
 - DBeaver
 
+## NVIDIA驱动
+```
+sudo apt-get purge nvidia-*
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt-get update && sudo apt-get upgrade
+ubuntu-drivers devices 查看后找到并 sudo apt install nvidia-driver-xxx
+```
+https://developer.nvidia.com/cuda-gpus
+
 ```
 # Dock再次点击时最小化
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
@@ -814,9 +812,6 @@ sudo apt-get install gufw
 # ubuntu-make
 sudo apt-get install ubuntu-make
 
-# 网速显示(可用gnome扩展Simple net speed替换)
-# 见https://github.com/GGleb/indicator-netspeed-unity
-
 # gnome扩展
 sudo apt-get install chrome-gnome-shell
 #然后可以从https://extensions.gnome.org/local/安装,用FF打开并安装附加组件,FF的扩展利用上面安装的shell
@@ -825,6 +820,12 @@ sudo apt-get install chrome-gnome-shell
 # Simple net speed (切换单位到B/s)
 # New Mail Indicator
 # Lock Keys
+
+# 系统状态
+sudo add-apt-repository ppa:fossfreedom/indicator-sysmonitor
+sudo apt-get update  && sudo apt-get install indicator-sysmonitor
+indicator-sysmonitor &
+# 点击数字,Proference,勾选Run on startup,格式{net} cpu: {cpu} mem: {mem}
 
 # 可选
 sudo apt install gnome-tweak-tool  把上面一行时间旁的日期打开
