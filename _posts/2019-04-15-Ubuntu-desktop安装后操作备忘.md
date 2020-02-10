@@ -55,6 +55,7 @@ deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted unive
 ```
 sudo apt-get install net-tools gcc vim git
 sudo apt-get install tree iftop sysstat
+sudo ubuntu-drivers autoinstall
 ```
 
 ### 配置vim
@@ -805,7 +806,7 @@ gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 #恢复：gsettings reset org.gnome.shell.extensions.dash-to-dock click-action
 
 # 设置工作区等特性
-sudo apt-get install unity-tweak-tool
+sudo apt-get install unity-tweak-tool dconf-editor
 
 # gufw图形化管理防火墙
 sudo apt-get install gufw
